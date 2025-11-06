@@ -28,10 +28,27 @@ namespace back_end.Model.DB
             return database;
         }
 
+        public static IMongoCollection<T> GetCollection<T>(string collectionName)
+        {
+            try { 
+                if (string.IsNullOrWhiteSpace(collectionName))
+                {
+                    throw new ArgumentException("Collection name cannot be null or empty.", nameof(collectionName));
+                }
+                var db = GetDatabase();
+                return db.GetCollection<T>(collectionName);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new Exception("Error retrieving collection: " + ex.Message);
+            }
+        }
+
         public static void ResetConnection()
         {
             client = null;
             database = null;
         }
+
     }
 }
