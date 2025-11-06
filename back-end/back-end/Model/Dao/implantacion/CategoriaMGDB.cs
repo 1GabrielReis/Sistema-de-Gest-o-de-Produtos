@@ -1,9 +1,17 @@
 ﻿using back_end.Model.Entities;
+using MongoDB.Driver;
 
 namespace back_end.Model.Dao.implantacion
 {
     public class CategoriaMGDB : INCategoriaDao
     {
+        private readonly IMongoDatabase? database;
+
+        public CategoriaMGDB(IMongoDatabase db)
+        {
+            database = db;
+        }
+
         public void Insert(CategoriaEntity categoria)
         {
             // Implementação do método Insert

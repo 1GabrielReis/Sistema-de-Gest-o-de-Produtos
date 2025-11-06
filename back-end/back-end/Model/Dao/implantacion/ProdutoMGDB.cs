@@ -1,9 +1,16 @@
 ﻿using back_end.Model.Entities;
+using MongoDB.Driver;
 
 namespace back_end.Model.Dao.implantacion
 {
     public class ProdutoMGDB : INProdutoDao
     {
+        private readonly IMongoDatabase? database = null;
+
+        public ProdutoMGDB(IMongoDatabase db)
+        {
+            database = db;
+        }
         public void Insert(ProdutoEntity produto)
         {
             // Implementação do método Insert
