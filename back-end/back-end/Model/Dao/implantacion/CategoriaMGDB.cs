@@ -48,7 +48,7 @@ namespace back_end.Model.Dao.implantacion
         {
             try
             {
-                CategoriaEntity categoria = categories.Find(p => p.Id == id.ToString()).FirstOrDefault();
+                CategoriaEntity categoria = categories.Find(c => c.Id == id.ToString()).FirstOrDefault();
                 return categoria;
             }
             catch (MongoException ex)
@@ -71,8 +71,16 @@ namespace back_end.Model.Dao.implantacion
 
         public List<CategoriaEntity> FindByname(string name)
         {
-            
-            return new List<CategoriaEntity>(); 
+            try
+            {
+                var categorias = categories.Find(c => c.Nome.ToLower().Contains(name.ToLower())).ToList();
+                return categorias;
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
+
         }
 
     }
