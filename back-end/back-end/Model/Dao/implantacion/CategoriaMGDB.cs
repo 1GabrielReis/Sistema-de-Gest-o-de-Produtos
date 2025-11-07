@@ -8,6 +8,7 @@ namespace back_end.Model.Dao.implantacion
     public class CategoriaMGDB : INCategoriaDao
     {
         private readonly IMongoDatabase database;
+        private readonly IMongoCollection<CategoriaEntity> categories;
 
         public CategoriaMGDB(IMongoDatabase db)
         {
@@ -16,43 +17,72 @@ namespace back_end.Model.Dao.implantacion
                 throw new ArgumentNullException(nameof(db), "O banco de dados não pode ser nulo.");
             }
             database = db;
+            categories = database.GetCollection<CategoriaEntity>("categories");
         }
 
-        public void Insert(CategoriaEntity categoria)
+        public async Task Insert(CategoriaEntity categoria)
         {
-            var list= new List<CategoriaEntity>();
             try
             {
-                // Implementação do método Insert
+                await categories.InsertOneAsync(categoria);
             }
             catch (MongoException ex)
             {
                 throw new CustomDbException(ex.Message);
             }
-            finally { }
         }
 
-        public void Update(CategoriaEntity categoria)
+        public async Task Update(CategoriaEntity categoria)
         {
-            // Implementação do método Update
+            try
+            {
+                var filter = Builders<CategoriaEntity>.Filter.Eq(c => c.Id, categoria.Id);
+                var result = await categories.ReplaceOneAsync(filter, categoria);
+
+                if (result.ModifiedCount == 0)
+                {
+                    throw new Exception("Categoria não encontrada ou nenhum dado alterado.");
+                }
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
         }
 
         public void DeleById(int id)
         {
-            // Implementação do método DeleById
+            try
+            {
+                var categoria = categories.DeleteOne(c => c.Id == id.ToString());
+                if (categoria.DeletedCount == 0)
+                {
+                    throw new CustomDbException("Categoria não encontrada para exclusão.");
+                }
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
         }
 
         public CategoriaEntity FindById(int id)
         {
-            
-            return null; 
+            try
+            {
+                CategoriaEntity categoria = categories.Find(c => c.Id == id.ToString()).FirstOrDefault();
+                return categoria;
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
         }
 
         public List<CategoriaEntity> FindAll()
         {
             try
             {
-                var categories = database.GetCollection<CategoriaEntity>("categories");
                 return categories.Find(_ => true).ToList();
             }
             catch (MongoException ex)
@@ -63,8 +93,16 @@ namespace back_end.Model.Dao.implantacion
 
         public List<CategoriaEntity> FindByname(string name)
         {
-            
-            return new List<CategoriaEntity>(); 
+            try
+            {
+                var categorias = categories.Find(c => c.Nome.ToLower().Contains(name.ToLower())).ToList();
+                return categorias;
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
+
         }
 
     }

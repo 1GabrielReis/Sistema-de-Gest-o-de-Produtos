@@ -4,8 +4,8 @@ namespace back_end.Model.Dao
 {
     public interface INCategoriaDao
     {
-        void Insert(CategoriaEntity categoria);
-        void Update(CategoriaEntity categoria);
+        Task Insert(CategoriaEntity categoria);
+        Task Update(CategoriaEntity categoria);
         void DeleById(int id);
         CategoriaEntity FindById(int id);
         List<CategoriaEntity> FindAll();
