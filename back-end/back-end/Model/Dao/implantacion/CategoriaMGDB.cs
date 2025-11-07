@@ -8,6 +8,7 @@ namespace back_end.Model.Dao.implantacion
     public class CategoriaMGDB : INCategoriaDao
     {
         private readonly IMongoDatabase database;
+        private readonly IMongoCollection<CategoriaEntity> categories;
 
         public CategoriaMGDB(IMongoDatabase db)
         {
@@ -16,6 +17,7 @@ namespace back_end.Model.Dao.implantacion
                 throw new ArgumentNullException(nameof(db), "O banco de dados não pode ser nulo.");
             }
             database = db;
+            categories = database.GetCollection<CategoriaEntity>("categories");
         }
 
         public void Insert(CategoriaEntity categoria)
@@ -44,15 +46,21 @@ namespace back_end.Model.Dao.implantacion
 
         public CategoriaEntity FindById(int id)
         {
-            
-            return null; 
+            try
+            {
+                CategoriaEntity categoria = categories.Find(p => p.Id == id.ToString()).FirstOrDefault();
+                return categoria;
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
         }
 
         public List<CategoriaEntity> FindAll()
         {
             try
             {
-                var categories = database.GetCollection<CategoriaEntity>("categories");
                 return categories.Find(_ => true).ToList();
             }
             catch (MongoException ex)
