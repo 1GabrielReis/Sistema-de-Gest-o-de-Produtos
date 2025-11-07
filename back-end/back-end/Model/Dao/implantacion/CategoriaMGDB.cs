@@ -1,5 +1,7 @@
 ﻿using back_end.Model.Entities;
 using MongoDB.Driver;
+using back_end.Model.DataBase;
+using System.Data.Common;
 
 namespace back_end.Model.Dao.implantacion
 {
@@ -14,7 +16,15 @@ namespace back_end.Model.Dao.implantacion
 
         public void Insert(CategoriaEntity categoria)
         {
-            // Implementação do método Insert
+            try
+            {
+
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
+            finally { }
         }
 
         public void Update(CategoriaEntity categoria)
@@ -46,3 +56,4 @@ namespace back_end.Model.Dao.implantacion
         }
     }
 }
+
