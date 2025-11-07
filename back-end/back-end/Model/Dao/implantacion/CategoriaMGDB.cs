@@ -12,11 +12,7 @@ namespace back_end.Model.Dao.implantacion
 
         public CategoriaMGDB(IMongoDatabase db)
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db), "O banco de dados não pode ser nulo.");
-            }
-            database = db;
+            database = db ?? throw new ArgumentNullException(nameof(db), "O banco de dados não pode ser nulo.");
             categories = database.GetCollection<CategoriaEntity>("categories");
         }
 
