@@ -20,23 +20,34 @@ namespace back_end.Model.Dao.implantacion
             categories = database.GetCollection<CategoriaEntity>("categories");
         }
 
-        public void Insert(CategoriaEntity categoria)
+        public async Task Insert(CategoriaEntity categoria)
         {
-            var list= new List<CategoriaEntity>();
             try
             {
-                // Implementação do método Insert
+                await categories.InsertOneAsync(categoria);
             }
             catch (MongoException ex)
             {
                 throw new CustomDbException(ex.Message);
             }
-            finally { }
         }
 
-        public void Update(CategoriaEntity categoria)
+        public async Task Update(CategoriaEntity categoria)
         {
-            // Implementação do método Update
+            try
+            {
+                var filter = Builders<CategoriaEntity>.Filter.Eq(c => c.Id, categoria.Id);
+                var result = await categories.ReplaceOneAsync(filter, categoria);
+
+                if (result.ModifiedCount == 0)
+                {
+                    throw new Exception("Categoria não encontrada ou nenhum dado alterado.");
+                }
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
         }
 
         public void DeleById(int id)
