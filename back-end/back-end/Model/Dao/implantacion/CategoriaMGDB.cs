@@ -41,7 +41,18 @@ namespace back_end.Model.Dao.implantacion
 
         public void DeleById(int id)
         {
-            // Implementação do método DeleById
+            try
+            {
+                var categoria = categories.DeleteOne(c => c.Id == id.ToString());
+                if (categoria.DeletedCount == 0)
+                {
+                    throw new CustomDbException("Categoria não encontrada para exclusão.");
+                }
+            }
+            catch (MongoException ex)
+            {
+                throw new CustomDbException(ex.Message);
+            }
         }
 
         public CategoriaEntity FindById(int id)
