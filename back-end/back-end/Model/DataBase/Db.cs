@@ -1,6 +1,7 @@
-﻿using MongoDB.Driver;
-using MongoDB.Bson;
+﻿using back_end.Model.DataBase;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace back_end.Model.DB
 {
@@ -19,19 +20,14 @@ namespace back_end.Model.DB
             if (database == null)
             {
                 string connectionString = configuration.GetSection("MongoDB:ConnectionString")?.Value
-                    ?? throw new Exception("Connection string not found in configuration.");
+                    ?? throw new CustomDbException("Connection string not found in configuration.");
                 string databaseName = configuration.GetSection("MongoDB:DatabaseName")?.Value
-                    ?? throw new Exception("Database name not found in configuration.");
+                    ?? throw new CustomDbException("Database name not found in configuration.");
                 client = new MongoClient(connectionString);
                 database = client.GetDatabase(databaseName);
             }
             return database;
         }
 
-        public static void ResetConnection()
-        {
-            client = null;
-            database = null;
-        }
     }
 }
